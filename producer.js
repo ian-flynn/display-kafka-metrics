@@ -1,4 +1,4 @@
-const Kafka = require('kafkajs').Kafka;
+const { Kafka, Partitioners } = require('kafkajs');
 const msg = process.argv[2];
 async function run() {
   try {
@@ -8,13 +8,14 @@ async function run() {
       brokers: ['Ians-MacBook-Pro.local:9092'],
     });
 
-    const producer = kafka.producer();
+    const producer = kafka.producer({
+      createPartitioner: Partitioners.DefaultPartitioner,
+    });
     console.log('Connecting... ');
     await producer.connect();
     console.log('Connected!');
-
     const partition = msg[0] < 'N' ? 0 : 1;
-    producer.send({
+    const result = await producer.send({
       topic: 'Users',
       messages: [
         {
@@ -23,7 +24,7 @@ async function run() {
         },
       ],
     });
-    console.log('Sent Successfully!');
+    console.log('Sent Successfully!', result);
 
     await producer.disconnect();
   } catch (error) {
