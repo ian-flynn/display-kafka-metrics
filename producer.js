@@ -1,25 +1,28 @@
 const { Kafka, Partitioners } = require('kafkajs');
-const msg = process.argv[2];
-async function run() {
+
+async function run(count) {
   try {
     const kafka = new Kafka({
       clientId: 'myapp',
-      // multiple brokers can go in this array
-      brokers: ['Ians-MacBook-Pro.local:9092'],
+      brokers: ['localhost:8097'],
     });
 
     const producer = kafka.producer({
       createPartitioner: Partitioners.DefaultPartitioner,
+      allowAutoTopicCreation: false,
     });
+
     console.log('Connecting... ');
     await producer.connect();
     console.log('Connected!');
-    const partition = msg[0] < 'N' ? 0 : 1;
+
+    // A-M go to partition 0, N-Z go to partition 1
+    const partition = 65 + (count % 26) < 'N' ? 0 : 1;
     const result = await producer.send({
       topic: 'Users',
       messages: [
         {
-          value: msg,
+          value: `${String.fromCharCode(65 + (count % 26))}lane${count}`,
           partition: partition,
         },
       ],
@@ -30,7 +33,10 @@ async function run() {
   } catch (error) {
     console.error('An Error has occured: ', error);
   } finally {
-    process.exit(0);
   }
 }
-run();
+let nameCount = 0;
+const intervalID = setInterval(() => {
+  run(nameCount);
+  nameCount++;
+}, 5000);
