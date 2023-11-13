@@ -4,24 +4,34 @@ async function run() {
   try {
     const kafka = new Kafka({
       clientId: 'myapp',
-      // multiple brokers can go in this array
-      brokers: ['Ians-MacBook-Pro.local:9092'],
+      brokers: ['localhost:8097', 'localhost:8098', 'localhost:8099'],
+      // brokers: [
+      //   'kafka-broker1:8097',
+      //   'kafka-broker2:8098',
+      //   'kafka-broker3:8099',
+      // ],
     });
 
     const admin = kafka.admin();
     console.log('Connecting... ');
     await admin.connect();
     console.log('Connected!');
-
     await admin.createTopics({
       topics: [
         {
           topic: 'Users',
           numPartitions: 2,
         },
+        {
+          topic: 'Payments',
+          numPartitions: 3,
+        },
       ],
     });
-    console.log('Created Successfully!');
+    const res = await admin.fetchTopicMetadata({
+      topics: ['Users', 'Payments'],
+    });
+    console.log('Created topics Users, and Payments successfully!');
 
     await admin.disconnect();
   } catch (error) {
