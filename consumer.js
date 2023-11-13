@@ -4,8 +4,7 @@ async function run() {
   try {
     const kafka = new Kafka({
       clientId: 'myapp',
-      // multiple brokers can go in this array
-      brokers: ['Ians-MacBook-Pro.local:9092'],
+      brokers: ['localhost:8097'],
     });
 
     const consumer = kafka.consumer({ groupId: 'test' });
