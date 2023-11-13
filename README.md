@@ -17,3 +17,11 @@ should output [1, 2, 3]
 hit Ctrl + C to exit zookeeper shell
 
 Kafka is running and waiting for consumers and producers
+
+run `node topic.js` to create the Users and Payments topics, and their partitions
+
+run `node producer.js` to start producing users
+
+in a new terminal run `node consumer.js` to start consuming those Users
+
+every 4 seconds you should see a user produces, and then consumed
